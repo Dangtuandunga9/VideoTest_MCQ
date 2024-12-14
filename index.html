@@ -5,53 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video with MCQ</title>
     <style>
-        /* Styling for MCQ questions */
+        /* CSS cho câu hỏi MCQ */
         #mcq {
             display: none;
             position: absolute;
-            top: 50%;
+            top: 30%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             background-color: rgba(255, 255, 255, 0.8);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             width: 300px;
-        }
-        #mcq form {
-            display: flex;
-            flex-direction: column;
-        }
-        #mcq button {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        #mcq button:hover {
-            background-color: #45a049;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
 
-    <!-- Embed YouTube Video -->
-    <iframe id="myVideo" width="640" height="360" 
-        src="https://www.youtube.com/embed/0fRehP382FI?enablejsapi=1" 
-        frameborder="0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-    </iframe>
+    <!-- Embed video YouTube -->
+    <div id="player">
+        <iframe id="myVideo" width="1280" height="720" src="https://www.youtube.com/embed/0fRehP382FI?enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
 
-    <!-- MCQ Form -->
+    <!-- Câu hỏi MCQ -->
     <div id="mcq">
-        <p>What is 2 + 2?</p>
+        <h3>Tỷ lệ ép tim: bóp bóng khi CC NTH ở người lớn?</h3>
         <form id="mcqForm">
-            <input type="radio" name="answer" value="3"> 3<br>
-            <input type="radio" name="answer" value="4"> 4<br>
-            <input type="radio" name="answer" value="5"> 5<br>
+            <input type="radio" name="answer" value="A"> A) 30:2<br>
+            <input type="radio" name="answer" value="B"> B) 15:2<br>
+            <input type="radio" name="answer" value="C"> C) 25:2<br>
+            <input type="radio" name="answer" value="D"> D) 15:1<br>
+            <button type="button" onclick="submitAnswer()">Submit</button>
         </form>
-        <button onclick="submitAnswer()">Submit</button>
     </div>
 
     <script>
@@ -65,37 +51,46 @@
                     'onStateChange': onPlayerStateChange
                 }
             });
+
+            // Bắt đầu kiểm tra thời gian video mỗi giây
+            setInterval(checkVideoTime, 1000);  // Kiểm tra mỗi giây
         }
 
-        // Detect when video reaches 60 seconds
-        function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.PLAYING) {
-                var currentTime = player.getCurrentTime();
+        // Kiểm tra thời gian video mỗi giây
+        function checkVideoTime() {
+            var currentTime = player.getCurrentTime();
+            console.log("Current Time: " + currentTime);  // Log thời gian video
 
-                // Show MCQ question between 60 and 70 seconds
-                if (currentTime >= 60 && currentTime <= 70) {
-                    mcq.style.display = "block";
-                } else {
-                    mcq.style.display = "none";
-                }
+            // Hiển thị câu hỏi MCQ khi video ở khoảng 60-70 giây
+            if (currentTime >= 60 && currentTime <= 75) {
+                mcq.style.display = "block";  // Hiển thị câu hỏi
+            } else {
+                mcq.style.display = "none";   // Ẩn câu hỏi
             }
         }
 
-        // Load the YouTube Player API script
+        // Khi trạng thái video thay đổi (ví dụ: video bắt đầu phát)
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                console.log("Video is playing.");
+            }
+        }
+
+        // Tải API YouTube
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        // Handle MCQ form submission
+        // Xử lý khi người dùng chọn đáp án
         function submitAnswer() {
             var form = document.getElementById("mcqForm");
             var answer = form.querySelector('input[name="answer"]:checked');
             if (answer) {
-                alert("Your answer: " + answer.value);
-                mcq.style.display = "none";  // Hide the question after submission
+                alert("Câu trả lời của bạn là: " + answer.value);
+                mcq.style.display = "none";  // Ẩn câu hỏi sau khi trả lời
             } else {
-                alert("Please select an answer!");
+                alert("Bạn chưa chọn câu trả lời!");
             }
         }
     </script>
