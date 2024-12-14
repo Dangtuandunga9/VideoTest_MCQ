@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video with MCQ</title>
+    <style>
+        /* Styling for MCQ questions */
+        #mcq {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+        #mcq form {
+            display: flex;
+            flex-direction: column;
+        }
+        #mcq button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #mcq button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Embed YouTube Video -->
+    <iframe id="myVideo" width="640" height="360" 
+        src="https://www.youtube.com/embed/0fRehP382FI?enablejsapi=1" 
+        frameborder="0" allow="autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+    </iframe>
+
+    <!-- MCQ Form -->
+    <div id="mcq">
+        <p>What is 2 + 2?</p>
+        <form id="mcqForm">
+            <input type="radio" name="answer" value="3"> 3<br>
+            <input type="radio" name="answer" value="4"> 4<br>
+            <input type="radio" name="answer" value="5"> 5<br>
+        </form>
+        <button onclick="submitAnswer()">Submit</button>
+    </div>
+
+    <script>
+        var player;
+        var mcq = document.getElementById("mcq");
+
+        // Load YouTube IFrame Player API
+        function onYouTubePlayerAPIReady() {
+            player = new YT.Player('myVideo', {
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        // Detect when video reaches 60 seconds
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                var currentTime = player.getCurrentTime();
+
+                // Show MCQ question between 60 and 70 seconds
+                if (currentTime >= 60 && currentTime <= 70) {
+                    mcq.style.display = "block";
+                } else {
+                    mcq.style.display = "none";
+                }
+            }
+        }
+
+        // Load the YouTube Player API script
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // Handle MCQ form submission
+        function submitAnswer() {
+            var form = document.getElementById("mcqForm");
+            var answer = form.querySelector('input[name="answer"]:checked');
+            if (answer) {
+                alert("Your answer: " + answer.value);
+                mcq.style.display = "none";  // Hide the question after submission
+            } else {
+                alert("Please select an answer!");
+            }
+        }
+    </script>
+
+</body>
+</html>
